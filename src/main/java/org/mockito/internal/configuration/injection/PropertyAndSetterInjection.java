@@ -62,6 +62,8 @@ import org.mockito.internal.util.reflection.FieldInitializer;
  */
 public class PropertyAndSetterInjection extends MockInjectionStrategy {
 
+    private boolean injectionOccurred = false;
+
     private final MockCandidateFilter mockCandidateFilter =
             new TypeBasedCandidateFilter(
                     new NameBasedCandidateFilter(new TerminalMockCandidateFilter()));
@@ -73,7 +75,7 @@ public class PropertyAndSetterInjection extends MockInjectionStrategy {
                 initializeInjectMocksField(injectMocksField, injectMocksFieldOwner);
 
         // for each field in the class hierarchy
-        boolean injectionOccurred = false;
+        injectionOccurred = false;
         Class<?> fieldClass = report.fieldClass();
         Object fieldInstanceNeedingInjection = report.fieldInstance();
         while (fieldClass != Object.class) {
@@ -111,14 +113,13 @@ public class PropertyAndSetterInjection extends MockInjectionStrategy {
         // pass 1
         injectionOccurred =
                 injectMockCandidatesOnFields(
-                        mocks, injectee, injectMocksField, false, orderedCandidateInjecteeFields);
+                        mocks, injectee, injectMocksField, orderedCandidateInjecteeFields);
         // pass 2
         injectionOccurred |=
                 injectMockCandidatesOnFields(
                         mocks,
                         injectee,
                         injectMocksField,
-                        injectionOccurred,
                         orderedCandidateInjecteeFields);
         return injectionOccurred;
     }
@@ -127,7 +128,6 @@ public class PropertyAndSetterInjection extends MockInjectionStrategy {
             Set<Object> mocks,
             Object injectee,
             Field injectMocksField,
-            boolean injectionOccurred,
             List<Field> orderedCandidateInjecteeFields) {
         for (Iterator<Field> it = orderedCandidateInjecteeFields.iterator(); it.hasNext(); ) {
             Field candidateField = it.next();
