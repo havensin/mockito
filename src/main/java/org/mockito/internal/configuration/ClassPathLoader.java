@@ -46,7 +46,7 @@ import org.mockito.plugins.MockMaker;
  */
 public class ClassPathLoader {
 
-    public static final String MOCKITO_CONFIGURATION_CLASS_NAME =
+    public static final String CONFIG_CLASS_NAME =
             "org.mockito.configuration.MockitoConfiguration";
 
     /**
@@ -57,7 +57,7 @@ public class ClassPathLoader {
         // Trying to get config from classpath
         Class<?> configClass;
         try {
-            configClass = Class.forName(MOCKITO_CONFIGURATION_CLASS_NAME);
+            configClass = Class.forName(CONFIG_CLASS_NAME);
         } catch (ClassNotFoundException e) {
             // that's ok, it means there is no global config, using default one.
             return null;
@@ -74,7 +74,7 @@ public class ClassPathLoader {
         } catch (Exception e) {
             throw new MockitoConfigurationException(
                     "Unable to instantiate "
-                            + MOCKITO_CONFIGURATION_CLASS_NAME
+                            + CONFIG_CLASS_NAME
                             + " class. Does it have a safe, no-arg constructor?",
                     e);
         }

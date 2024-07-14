@@ -29,36 +29,18 @@ public class MockAnnotationProcessor implements FieldAnnotationProcessor<Mock> {
                 annotation, field.getType(), field::getGenericType, field.getName());
     }
 
-    @SuppressWarnings("deprecation")
     public static Object processAnnotationForMock(
             Mock annotation, Class<?> type, Supplier<Type> genericType, String name) {
         MockSettings mockSettings = Mockito.withSettings();
-        if (annotation.extraInterfaces().length > 0) { // never null
-            mockSettings.extraInterfaces(annotation.extraInterfaces());
-        }
-        if ("".equals(annotation.name())) {
-            mockSettings.name(name);
-        } else {
-            mockSettings.name(annotation.name());
-        }
-        if (annotation.serializable()) {
-            mockSettings.serializable();
-        }
-        if (annotation.stubOnly()) {
-            mockSettings.stubOnly();
-        }
-        if (annotation.lenient()) {
-            mockSettings.lenient();
-        }
-        if (annotation.strictness() != Mock.Strictness.TEST_LEVEL_DEFAULT) {
-            mockSettings.strictness(Strictness.valueOf(annotation.strictness().toString()));
-        }
-        if (!annotation.mockMaker().isEmpty()) {
-            mockSettings.mockMaker(annotation.mockMaker());
-        }
-        if (annotation.withoutAnnotations()) {
-            mockSettings.withoutAnnotations();
-        }
+
+        mockInterface(annotation, mockSettings);
+        mockName(annotation, mockSettings, name);
+        mockSerializable(annotation, mockSettings);
+        mockStubOnly(annotation, mockSettings);
+        mockLenient(annotation, mockSettings);
+        mockStrictness(annotation, mockSettings);
+        mockMockMakerEmpty(annotation, mockSettings);
+        mockWithoutAnnotations(annotation, mockSettings);
 
         mockSettings.genericTypeToMock(genericType.get());
 
@@ -79,6 +61,58 @@ public class MockAnnotationProcessor implements FieldAnnotationProcessor<Mock> {
             return Mockito.mock(type, mockSettings);
         }
     }
+
+    public static void mockInterface(Mock annotation, MockSettings settings){
+        if (annotation.extraInterfaces().length > 0) { // never null
+            settings.extraInterfaces(annotation.extraInterfaces());
+        }
+    }
+
+    public static void mockName(Mock annotation, MockSettings settings, String name){
+        if ("".equals(annotation.name())) {
+            settings.name(name);
+        } else {
+            settings.name(annotation.name());
+        }
+    }
+
+    public static void mockSerializable(Mock annotation, MockSettings settings){
+        if (annotation.serializable()) {
+            settings.serializable();
+        }
+    }
+
+    public static void mockStubOnly(Mock annotation, MockSettings settings){
+        if (annotation.stubOnly()) {
+            settings.stubOnly();
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    public static void mockLenient(Mock annotation, MockSettings settings){
+        if (annotation.lenient()) {
+            settings.lenient();
+        }
+    }
+
+    public static void mockStrictness(Mock annotation, MockSettings settings){
+        if (annotation.strictness() != Mock.Strictness.TEST_LEVEL_DEFAULT) {
+            settings.strictness(Strictness.valueOf(annotation.strictness().toString()));
+        }
+    }
+
+    public static void mockMockMakerEmpty(Mock annotation, MockSettings settings){
+        if (!annotation.mockMaker().isEmpty()) {
+            settings.mockMaker(annotation.mockMaker());
+        }
+    }
+
+    public static void mockWithoutAnnotations(Mock annotation, MockSettings settings){
+        if (annotation.withoutAnnotations()) {
+            settings.withoutAnnotations();
+        }
+    }
+
 
     static Class<?> inferParameterizedType(Type type, String name, String sort) {
         if (type instanceof ParameterizedType) {
