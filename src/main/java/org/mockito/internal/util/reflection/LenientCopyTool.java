@@ -12,6 +12,8 @@ import java.lang.reflect.Modifier;
 
 public class LenientCopyTool {
 
+    MemberAccessor accessor = Plugins.getMemberAccessor();
+
     public <T> void copyToMock(T from, T mock) {
         copy(from, mock, from.getClass());
     }
@@ -23,13 +25,12 @@ public class LenientCopyTool {
     private <T> void copy(T from, T to, Class<?> fromClazz) {
 
         while (fromClazz != Object.class) {
-            copyValues(from, to, fromClazz);
+            copyValues(from, to, fromClazz, accessor);
             fromClazz = fromClazz.getSuperclass();
         }
     }
 
-    private <T> void copyValues(T from, T mock, Class<?> classFrom) {
-        MemberAccessor accessor = Plugins.getMemberAccessor();
+    private <T> void copyValues(T from, T mock, Class<?> classFrom, MemberAccessor accessor) {
 
         Field[] fields = classFrom.getDeclaredFields();
 
